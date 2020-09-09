@@ -37,6 +37,7 @@ pub struct Category {
     pub name: String,
 }
 
+/// Retrieve AQI info from [AirNow](https://www.airnow.gov/)
 #[derive(StructOpt, Debug)]
 struct Opt {   
     
