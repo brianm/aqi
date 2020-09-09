@@ -1,19 +1,30 @@
 {
-	"name": "Codespaces Rust Starter",
+	"name": "wsf-dev",
+	"dockerFile": "Dockerfile",
+	"runArgs": [
+		"--cap-add=SYS_PTRACE",
+		"--security-opt",
+		"seccomp=unconfined"
+	],
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"lldb.executable": "/usr/bin/lldb",
+		"terminal.integrated.shell.linux": "/usr/bin/zsh",
+	},
+	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"cschleiden.vscode-github-actions",
 		"ms-vsliveshare.vsliveshare",
+		"rust-lang.rust",
 		"matklad.rust-analyzer",
-		"serayuzgur.crates",
-		"vadimcn.vscode-lldb"
+		"bungcip.better-toml",
+		"vadimcn.vscode-lldb",
+		"serayuzgur.crates"
 	],
-	"dockerFile": "Dockerfile",
-	"settings": {
-		"editor.formatOnSave": true,
-		"terminal.integrated.shell.linux": "/usr/bin/zsh",
-		"files.exclude": {
-			"**/CODE_OF_CONDUCT.md": true,
-			"**/LICENSE": true
-		}
-	}
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "rustc --version",
+	// Comment out to run as root instead
+	"remoteUser": "vscode"
 }
