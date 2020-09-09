@@ -38,9 +38,16 @@ pub struct Category {
 }
 
 /// Retrieve AQI info from [AirNow](https://www.airnow.gov/)
+/// 
+/// Pass either the zipcode, or the lat/long pair (as seperate arguments, may need)
+/// to use `--` to clarify for the command line parser that a negative longitude
+/// is not an option :-)
+/// 
+/// Examples: 
+///     aqi 19808
+///     aqi -- 46.631070009805256 -120.5118590799656
 #[derive(StructOpt, Debug)]
-struct Opt {   
-    
+struct Opt {
     /// Zipcode or latitude
     zipcode_or_latitude: String,
 
@@ -54,18 +61,15 @@ async fn main() -> Result<()> {
     let env = env_logger::Env::default().filter_or("AQI_LOG", "info");
     env_logger::init_from_env(env);
 
-
     let opts = Opt::from_args();
-    println!("{:?}", opts);
+    let key = "09FA59FF-077F-4012-BD47-D093B4514249";
 
-    let zip = opts.zipcode_or_latitude;
-    let key = env!("AIRNOW_API_KEY");
-    let url = format!("http://www.airnowapi.org/aq/forecast/zipCode/?format=application/json&zipCode={}&API_KEY={}", zip, key);
-    
-    let resp = reqwest::get(&url)
-        .await?
-        .json::<Vec<Root>>()
-        .await?;
+    let url = match opts.longitude {
+        Some(long) => format!("http://www.airnowapi.org/aq/forecast/latLong/?format=application/json&latitude={}&longitude={}&API_KEY={}&distance=100", opts.zipcode_or_latitude, long, key),
+        None => format!("http://www.airnowapi.org/aq/forecast/zipCode/?format=application/json&zipCode={}&API_KEY={}", opts.zipcode_or_latitude, key),
+    };
+
+    let resp = reqwest::get(&url).await?.json::<Vec<Root>>().await?;
     let data = resp.first().expect("no data available");
     println!("{}\t{}\t{}", data.aqi, data.category.name, data.discussion);
 
