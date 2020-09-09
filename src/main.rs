@@ -1,4 +1,5 @@
 use anyhow::Result;
+use structopt::StructOpt;
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -36,12 +37,36 @@ pub struct Category {
     pub name: String,
 }
 
+#[derive(StructOpt, Debug)]
+struct Opt {   
+    
+    /// Zipcode or latitude
+    zipcode_or_latitude: String,
+
+    /// Longitude
+    longitude: Option<String>,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     human_panic::setup_panic!();
-
     let env = env_logger::Env::default().filter_or("AQI_LOG", "info");
     env_logger::init_from_env(env);
-    log::info!("woof");
+
+
+    let opts = Opt::from_args();
+    println!("{:?}", opts);
+
+    let zip = opts.zipcode_or_latitude;
+    let key = env!("AIRNOW_API_KEY");
+    let url = format!("http://www.airnowapi.org/aq/forecast/zipCode/?format=application/json&zipCode={}&API_KEY={}", zip, key);
+    
+    let resp = reqwest::get(&url)
+        .await?
+        .json::<Vec<Root>>()
+        .await?;
+    let data = resp.first().expect("no data available");
+    println!("{}\t{}\t{}", data.aqi, data.category.name, data.discussion);
+
     Ok(())
 }
