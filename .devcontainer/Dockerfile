@@ -24,15 +24,7 @@ RUN apt-get update \
     && apt-get -y install git openssh-client less iproute2 procps lsb-release \
     #
     # Install lldb, vadimcn.vscode-lldb VSCode extension dependencies
-    && apt-get install -y lldb python3-minimal libpython3.7 \
-    #
-    # Install zsh & oh-my-zsh
-    && apt-get install -y zsh \
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" \
-    cp -R /root/.oh-my-zsh /home/$USERNAME \
-    cp /root/.zshrc /home/$USERNAME \
-    sed -i -e "s/\/root\/.oh-my-zsh/\/home\/$USERNAME\/.oh-my-zsh/g" /home/$USERNAME/.zshrc \
-    chown -R $USER_UID:$USER_GID /home/$USERNAME/.oh-my-zsh /home/$USERNAME/.zshrc \
+    && apt-get install -y lldb python3-minimal libpython3.7 \        
     #
     # Install Rust components
     && rustup update 2>&1 \
