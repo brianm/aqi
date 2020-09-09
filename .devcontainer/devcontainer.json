@@ -1,5 +1,5 @@
 {
-	"name": "wsf-dev",
+	"name": "aqi-dev",
 	"dockerFile": "Dockerfile",
 	"runArgs": [
 		"--cap-add=SYS_PTRACE",
